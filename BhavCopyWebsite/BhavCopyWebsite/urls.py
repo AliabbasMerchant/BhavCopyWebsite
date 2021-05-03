@@ -18,14 +18,17 @@ from django.urls import path, include
 from django.http import HttpResponse
 from django.shortcuts import render
 
+
 def index_view(request, *args, **kwargs):
-  return HttpResponse(render(request, 'index.html'))
+    return HttpResponse(render(request, 'index.html'))
+
 
 frontend_urls = [
-  path('', index_view),
+    path('', index_view),
 ]
 
 urlpatterns = [
-  path('admin/', admin.site.urls),
-  path('', include(frontend_urls)),
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),
+    path('', include(frontend_urls)),
 ]
