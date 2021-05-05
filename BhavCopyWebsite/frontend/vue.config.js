@@ -4,6 +4,9 @@ module.exports = {
     indexPath: "../../templates/index.html",
 
     pages: {
-        index: "src/main.js",
+        index: {
+            entry: "src/main.js",
+            title: "BhavCopy"
+        }
     },
 };

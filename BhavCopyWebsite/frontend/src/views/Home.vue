@@ -1,18 +1,32 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div id="home">
+    <Search class="mb-3" @search="onSearchResult" />
+    <template v-if="searchResults != undefined">
+      <ResultsView :scrips="searchResults" />
+      <div v-if="searchResults.length === 0">No Data</div>
+    </template>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import Search from "@/components/Search.vue";
+import ResultsView from "@/components/ResultsView.vue";
 
 export default {
   name: "Home",
+  data() {
+    return {
+      searchResults: undefined, // to indicate that no search has been performed as yet
+    };
+  },
   components: {
-    HelloWorld,
+    Search,
+    ResultsView,
+  },
+  methods: {
+    onSearchResult(data) {
+      this.searchResults = data;
+    },
   },
 };
 </script>

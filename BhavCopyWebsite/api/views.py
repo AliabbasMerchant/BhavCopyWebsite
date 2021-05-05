@@ -21,16 +21,17 @@ def get_scrip_details(scrip_name: str) -> Optional[Dict[str, Any]]:
 @api_view(['GET'])
 def search(request, *args, **kwargs):
     if request.method == 'GET':
-        search_string = request.GET.get('q', '')
+        search_string: str = request.GET.get('q', '')
+        search_string = search_string.upper()
 
         matching_scrip_names = redis_instance.keys(f"*{search_string}*")
 
-        search_results = {}
+        search_results = []
         for scrip_name in matching_scrip_names:
             scrip_name = scrip_name.decode('utf-8')
             scrip_details = get_scrip_details(scrip_name)
             if scrip_details is not None:  # would never be None, as we are sure that the scrip_name exists
-                search_results[scrip_name] = scrip_details
+                search_results.append(scrip_details)
 
         return Response(search_results, status=200)
 
@@ -40,6 +41,7 @@ def search(request, *args, **kwargs):
 @api_view(['GET'])
 def scrip(request, scrip_name: str, *args, **kwargs):
     if request.method == 'GET':
+        scrip_name = scrip_name.upper()
         scrip_details = get_scrip_details(scrip_name)
         if scrip_details is not None:
             return Response(scrip_details, status=200)
