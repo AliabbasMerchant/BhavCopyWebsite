@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from pathlib import Path
 
 logger = logging.getLogger("bhavcopy")
 logger.propagate = False
@@ -7,7 +8,8 @@ logger.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter("%(asctime)s - %(levelname)s: %(message)s", "%b %d %H:%M:%S")
 
-file_handler = logging.FileHandler("log/" + datetime.strftime(datetime.now(), "%b %d %H:%M:%S") + ".log")
+LOG_DIR = f"{Path(__file__).resolve().parent.parent}/logs"
+file_handler = logging.FileHandler(f"{LOG_DIR}/{datetime.strftime(datetime.now(), '%b %d %H:%M:%S')}.log")
 file_handler.setFormatter(formatter)
 file_handler.setLevel(logging.DEBUG)
 

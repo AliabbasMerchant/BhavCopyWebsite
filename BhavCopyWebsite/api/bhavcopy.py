@@ -6,10 +6,11 @@ import zipfile
 import redis
 import csv
 from dotenv import load_dotenv
+from pathlib import Path
 
 from .logger import logger
 
-DATA_DIR = "data"
+DATA_DIR = f"{Path(__file__).resolve().parent.parent}/data"
 
 CSV_TO_REDIS_KEY_MAPPING = {
     'SC_CODE': 'code',

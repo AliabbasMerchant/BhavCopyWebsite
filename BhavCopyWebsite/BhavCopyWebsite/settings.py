@@ -32,6 +32,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+if os.getenv('ENV', 'DEV') == 'PROD':
+    DEBUG = False
+
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        '52.230.0.192',
+    ]
+
 
 # Application definition
 
