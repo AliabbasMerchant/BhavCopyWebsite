@@ -7,6 +7,8 @@ import redis
 import csv
 from dotenv import load_dotenv
 
+from .logger import logger
+
 DATA_DIR = "data"
 
 CSV_TO_REDIS_KEY_MAPPING = {
@@ -65,19 +67,24 @@ def download_and_ingest(date_string: Optional[str] = None) -> bool:
     if date_string is None:
         date_string = date.today().strftime("%d%m%y")
 
-    zip_file_path = f"{DATA_DIR}/{date_string}_csv.zip"
+    zip_file_path = f"{DATA_DIR}/{date_string}.zip"
     if not os.path.exists(DATA_DIR):
         os.mkdir(DATA_DIR)
 
+    logger.debug(f"Attempting to download zip for date {date_string} to file {zip_file_path}...")
     zip_was_downloaded = download_bhavcopy_zip(date_string, zip_file_path)
     if not zip_was_downloaded:
+        logger.debug("Zip not downloaded")
         return False
+    logger.debug("Zip downloaded")
 
     extract_zip_and_delete_it(zip_file_path, DATA_DIR)
 
     csv_path = f"{DATA_DIR}/EQ{date_string}.CSV"
+    logger.debug(f"CSV {csv_path} extracted from the zip")
 
     ingest_csv(csv_path)
+    logger.debug(f"CSV {csv_path} ingested")
     return True
 
 
