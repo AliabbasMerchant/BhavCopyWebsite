@@ -1,6 +1,6 @@
 from typing import Optional
 import requests
-from datetime import date
+from datetime import date, timedelta
 import os
 import zipfile
 import redis
@@ -86,6 +86,21 @@ def download_and_ingest(date_string: Optional[str] = None) -> bool:
     ingest_csv(csv_path)
     logger.debug(f"CSV {csv_path} ingested")
     return True
+
+
+def init_data():
+    # if there is no data in Redis, try to pull in the latest data
+    load_dotenv()
+
+    redis_instance = redis.StrictRedis(host=os.getenv(
+        'REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB'))
+    if redis_instance.hgetall('HDFC') is None: # Some random company
+        # there is no data
+        d = date.today()
+        while True:
+            if download_and_ingest(date_string=d.strftime("%d%m%y")):
+                break
+            d = d - timedelta(days=1)
 
 
 if __name__ == "__main__":
