@@ -2,8 +2,8 @@
   <div id="home">
     <Search class="mb-3" @search="onSearchResult" />
     <template v-if="searchResults != undefined">
-      <ResultsView :scrips="searchResults" />
-      <div v-if="searchResults.length === 0">No Data</div>
+      <ResultsView v-if="searchResults.length !== 0" :scrips="searchResults" />
+      <h2 v-else>No such stock(s)</h2>
     </template>
   </div>
 </template>

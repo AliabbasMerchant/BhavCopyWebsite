@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative">
     <button type="button" class="btn btn-primary mb-2" @click="downloadCSVData">
-      Download CSV of Results
+      Download CSV of Search Results
     </button>
 
     <div class="table-wrapper">
