@@ -17,16 +17,20 @@ Django, Vue
 
 ## Setup Instructions
 1. Download the source code
-2. Download redis, if required: `sudo apt update && sudo apt install -y redis-server` (For more info, check [this](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04))
-3. The `BhavCopyWebsite` folder contains an `example.env` file. Create a `.env` file in the same folder, with the proper values, using the example file as reference.
-4. Run the `setup.sh` file located in the repository root: `bash -x setup.sh`
-5. Run the python server
+2. Install redis, if l: `sudo apt update && sudo apt install -y redis-server` (For more info, check [this](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04))
+3. The `BhavCopyWebsite/BhavCopyWebsite` folder contains an `example.env` file. Create a `.env` file in the same folder, with the proper values, using the example file as reference.
+4. Run the `init.sh` file located in the repository root: `bash -x init.sh`
+5. `cd BhavCopyWebsite`
+6. Run the Django migrations: `python3 manage.py migrate`
+7. Start the server: `python3 manage.py runserver`
 
-## Deploying to production
+## Deploying to production [tested on a Linux (ubuntu 18.04) VM]
 1. `cd /var/www`
-2. `git clone https://github.com/AliabbasMerchant/BhavCopyWebsite`
+2. `sudo git clone https://github.com/AliabbasMerchant/BhavCopyWebsite`
+3. `cd BhavCopyWebsite`
+4. Create a `.env` file in `BhavCopyWebsite\BhavCopyWebsite`, using `example.env` as reference
 4. `sudo chmod +x deploy.sh`
-3. `sudo ./deploy.sh`
+5. `bash -x ./deploy.sh`
 
 ## Live Demo
 A live version of the website is hosted at: [52.230.0.192](http://52.230.0.192)

@@ -11,7 +11,9 @@ import logging
 
 logger = logging.getLogger("bhavcopy")
 
-DATA_DIR = f"{Path(__file__).resolve().parent.parent}/data"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = f"{BASE_DIR}/data"
+ENV_FILE_PATH = f"{BASE_DIR}/BhavCopyWebsite/.env"
 
 CSV_TO_REDIS_KEY_MAPPING = {
     'SC_CODE': 'code',
@@ -47,7 +49,7 @@ def extract_zip_and_delete_it(zip_file_path: str, dir_to_extract_to: str):
 
 
 def ingest_csv(csv_path):
-    load_dotenv()
+    load_dotenv(dotenv_path=ENV_FILE_PATH)
 
     redis_instance = redis.StrictRedis(
         host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB')
@@ -93,7 +95,7 @@ def download_and_ingest(date_string: Optional[str] = None) -> bool:
 
 def init_data():
     # if there is no data in Redis, try to pull in the latest data
-    load_dotenv()
+    load_dotenv(dotenv_path=ENV_FILE_PATH)
 
     redis_instance = redis.StrictRedis(
         host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB')
