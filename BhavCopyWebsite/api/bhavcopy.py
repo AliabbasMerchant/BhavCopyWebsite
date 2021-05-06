@@ -7,8 +7,9 @@ import redis
 import csv
 from dotenv import load_dotenv
 from pathlib import Path
+import logging
 
-from .logger import logger
+logger = logging.getLogger("bhavcopy")
 
 DATA_DIR = f"{Path(__file__).resolve().parent.parent}/data"
 
@@ -48,8 +49,9 @@ def extract_zip_and_delete_it(zip_file_path: str, dir_to_extract_to: str):
 def ingest_csv(csv_path):
     load_dotenv()
 
-    redis_instance = redis.StrictRedis(host=os.getenv(
-        'REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB'))
+    redis_instance = redis.StrictRedis(
+        host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB')
+    )
 
     with open(csv_path, 'r') as file:
         csv_file = csv.DictReader(file)
@@ -72,20 +74,20 @@ def download_and_ingest(date_string: Optional[str] = None) -> bool:
     if not os.path.exists(DATA_DIR):
         os.mkdir(DATA_DIR)
 
-    logger.debug(f"Attempting to download zip for date {date_string} to file {zip_file_path}...")
+    logger.info(f"Attempting to download zip for date {date_string} to file {zip_file_path}...")
     zip_was_downloaded = download_bhavcopy_zip(date_string, zip_file_path)
     if not zip_was_downloaded:
-        logger.debug("Zip not downloaded")
+        logger.warning(f"Zip not available for date {date_string}")
         return False
-    logger.debug("Zip downloaded")
+    logger.info("Zip downloaded")
 
     extract_zip_and_delete_it(zip_file_path, DATA_DIR)
 
     csv_path = f"{DATA_DIR}/EQ{date_string}.CSV"
-    logger.debug(f"CSV {csv_path} extracted from the zip")
+    logger.info(f"CSV {csv_path} extracted from the zip")
 
     ingest_csv(csv_path)
-    logger.debug(f"CSV {csv_path} ingested")
+    logger.info(f"CSV {csv_path} ingested")
     return True
 
 
@@ -93,15 +95,19 @@ def init_data():
     # if there is no data in Redis, try to pull in the latest data
     load_dotenv()
 
-    redis_instance = redis.StrictRedis(host=os.getenv(
-        'REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB'))
-    if redis_instance.hgetall('HDFC') is None: # Some random company
+    redis_instance = redis.StrictRedis(
+        host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=os.getenv('REDIS_DB')
+    )
+    if redis_instance.hgetall('HDFC') == {}:  # Some random, valid company
         # there is no data
+        logger.warning("There is no existing data. Attempting to get the latest data...")
         d = date.today()
         while True:
             if download_and_ingest(date_string=d.strftime("%d%m%y")):
                 break
             d = d - timedelta(days=1)
+    else:
+        logger.info("There is some existing stocks data. Using that.")
 
 
 if __name__ == "__main__":
