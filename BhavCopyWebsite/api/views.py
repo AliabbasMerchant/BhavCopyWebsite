@@ -25,10 +25,8 @@ def search(request, *args, **kwargs):
     search_string: str = request.GET.get('q', '')
     search_string = search_string.upper()
 
-    matching_scrip_names = redis_instance.keys(f"*{search_string}*")
-
     search_results = []
-    for scrip_name in matching_scrip_names:
+    for scrip_name in redis_instance.scan_iter(match=f"*{search_string}*"):
         scrip_name = scrip_name.decode('utf-8')
         scrip_details = get_scrip_details(scrip_name)
         if scrip_details is not None:  # would never be None, as we are sure that the scrip_name exists
